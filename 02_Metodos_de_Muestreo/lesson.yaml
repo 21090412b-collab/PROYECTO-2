@@ -1,0 +1,166 @@
+- Class: meta
+  Course: Muestreo Unidad II
+  Lesson: 02 Metodos de Muestreo
+  Author: Equipo de Estadistica UACJ
+  Type: Standard
+  Organization: Universidad Autonoma de Ciudad Juarez
+  Version: 2.4.5
+
+- Class: text
+  Output: "Leccion 2. Metodos de Muestreo. Objetivo de aprendizaje: al terminar esta leccion podras aplicar en R los metodos de muestreo aleatorio simple, sistematico, estratificado, por conglomerados y por conveniencia, e interpretar cuando conviene usar cada uno."
+
+- Class: text
+  Output: "Ya tienes disponible el data frame 'estudiantes' (100 registros, con columnas id, semestre, grupo y promedio), ademas de N (tamano de la poblacion), 'estratos' y 'conglomerados'. Estos objetos fueron creados por initLesson.R con set.seed(123), asi que los resultados de esta leccion son reproducibles."
+
+- Class: cmd_question
+  Output: "Antes de muestrear, observa la estructura de la poblacion escribiendo str(estudiantes)."
+  CorrectAnswer: str(estudiantes)
+  AnswerTests: omnitest(correctExpr='str(estudiantes)')
+  Hint: "str(estudiantes)"
+
+- Class: text
+  Output: "MUESTREO ALEATORIO SIMPLE (MAS): cada elemento de la poblacion tiene la misma probabilidad de ser elegido, y la seleccion se hace sin ningun criterio adicional. Es facil de aplicar y de analizar, pero en poblaciones muy heterogeneas puede no representar bien a subgrupos pequenos."
+
+- Class: cmd_question
+  Output: "Fija la semilla con set.seed(1) y luego obten una muestra aleatoria simple de 10 identificadores con sample(estudiantes$id, 10)."
+  CorrectAnswer: set.seed(1); sample(estudiantes$id, 10)
+  AnswerTests: omnitest(correctExpr='{set.seed(1); sample(estudiantes$id, 10)}')
+  Hint: "Primero set.seed(1), despues sample(estudiantes$id, 10)."
+
+- Class: mult_question
+  Output: "¿Cual es la condicion principal que debe cumplirse para que un muestreo aleatorio simple sea valido?"
+  AnswerChoices: Que la poblacion este ordenada alfabeticamente;Que cada elemento tenga la misma probabilidad de ser seleccionado y se conozca el marco muestral completo;Que la poblacion se divida primero en estratos;Que se seleccione siempre el primer 10% de la lista
+  CorrectAnswer: Que cada elemento tenga la misma probabilidad de ser seleccionado y se conozca el marco muestral completo
+  AnswerTests: omnitest(correctVal='Que cada elemento tenga la misma probabilidad de ser seleccionado y se conozca el marco muestral completo')
+  Hint: "Piensa en la definicion basica de aleatoriedad: probabilidad igual para todos."
+
+- Class: exact_question
+  Output: "Interpretacion: en la muestra que obtuviste, cada uno de los 100 estudiantes tenia la misma probabilidad de salir elegido. Esa probabilidad, en fraccion simple n/N, es 10/100. Escribe esa probabilidad como decimal (por ejemplo 0.5)."
+  CorrectAnswer: 0.1
+  AnswerTests: omnitest(correctVal=0.1, tolerance = 0.001)
+  Hint: "10 dividido entre 100."
+
+- Class: text
+  Output: "MUESTREO SISTEMATICO: se ordena la poblacion, se calcula un intervalo k = N / n, se elige un punto de inicio aleatorio entre 1 y k, y luego se seleccionan los elementos cada k posiciones (inicio, inicio+k, inicio+2k, ...)."
+
+- Class: cmd_question
+  Output: "Calcula el intervalo de seleccion k para obtener una muestra sistematica de tamano 10 de esta poblacion: k <- N / 10"
+  CorrectAnswer: k <- N / 10
+  AnswerTests: omnitest(correctExpr='N/10')
+  Hint: "k <- N / 10"
+
+- Class: cmd_question
+  Output: "Fija set.seed(1) y elige el punto de inicio aleatorio entre 1 y k con: inicio <- sample(1:k, 1)"
+  CorrectAnswer: set.seed(1); inicio <- sample(1:k, 1)
+  AnswerTests: omnitest(correctExpr='{set.seed(1); sample(1:k,1)}')
+  Hint: "set.seed(1) primero, luego inicio <- sample(1:k, 1)."
+
+- Class: cmd_question
+  Output: "Genera la muestra sistematica completa con: seq(inicio, N, by = k)"
+  CorrectAnswer: seq(inicio, N, by = k)
+  AnswerTests: omnitest(correctExpr='seq(inicio, N, by = k)')
+  Hint: "seq(inicio, N, by = k)"
+
+- Class: mult_question
+  Output: "El muestreo sistematico puede dar resultados enganosos cuando la poblacion tiene:"
+  AnswerChoices: Un tamano muy grande;Una periodicidad u orden oculto que coincide con el intervalo k;Variables numericas;Mas de un estrato
+  CorrectAnswer: Una periodicidad u orden oculto que coincide con el intervalo k
+  AnswerTests: omnitest(correctVal='Una periodicidad u orden oculto que coincide con el intervalo k')
+  Hint: "Piensa que pasaria si, por ejemplo, cada k-esimo elemento perteneciera siempre al mismo turno de trabajo."
+
+- Class: text
+  Output: "Interpretacion: si en 'estudiantes' los registros estuvieran ordenados de forma que cada 10 filas se repitiera el mismo semestre, la muestra sistematica podria terminar seleccionando siempre al mismo semestre, sesgando el resultado. Por eso conviene revisar el orden de la poblacion antes de aplicar este metodo."
+
+- Class: text
+  Output: "MUESTREO ESTRATIFICADO: la poblacion se divide primero en ESTRATOS (subgrupos internamente similares y mutuamente excluyentes, por ejemplo el semestre), y luego se toma una muestra dentro de CADA estrato. Esto garantiza representacion de todos los subgrupos."
+
+- Class: cmd_question
+  Output: "Fija set.seed(1) y obten una muestra estratificada de 2 estudiantes POR CADA semestre usando: unlist(tapply(estudiantes$id, estudiantes$semestre, function(x) sample(x, 2)))"
+  CorrectAnswer: set.seed(1); unlist(tapply(estudiantes$id, estudiantes$semestre, function(x) sample(x, 2)))
+  AnswerTests: omnitest(correctExpr='{set.seed(1); unlist(tapply(estudiantes$id, estudiantes$semestre, function(x) sample(x, 2)))}')
+  Hint: "set.seed(1) y despues unlist(tapply(estudiantes$id, estudiantes$semestre, function(x) sample(x, 2)))."
+
+- Class: mult_question
+  Output: "¿Cual es la diferencia principal entre muestreo ESTRATIFICADO y muestreo por CONGLOMERADOS?"
+  AnswerChoices: No hay ninguna diferencia, son el mismo metodo con distinto nombre;En estratificado se muestrea DENTRO de cada subgrupo; en conglomerados se eligen subgrupos COMPLETOS y se estudian todos sus elementos;En estratificado nunca se usa R, en conglomerados si;En conglomerados los subgrupos deben ser homogeneos entre si, en estratificado no
+  CorrectAnswer: En estratificado se muestrea DENTRO de cada subgrupo; en conglomerados se eligen subgrupos COMPLETOS y se estudian todos sus elementos
+  AnswerTests: omnitest(correctVal='En estratificado se muestrea DENTRO de cada subgrupo; en conglomerados se eligen subgrupos COMPLETOS y se estudian todos sus elementos')
+  Hint: "En uno seleccionas personas dentro de cada grupo; en el otro seleccionas grupos completos."
+
+- Class: text
+  Output: "MUESTREO POR CONGLOMERADOS: la poblacion se divide en grupos (conglomerados), idealmente heterogeneos internamente pero similares entre si (por ejemplo, el 'grupo' escolar al que pertenece cada estudiante). Se eligen aleatoriamente algunos conglomerados COMPLETOS y se estudia a TODOS sus integrantes."
+
+- Class: cmd_question
+  Output: "Fija set.seed(1) y elige 2 conglomerados completos al azar con: sample(conglomerados, 2)"
+  CorrectAnswer: set.seed(1); sample(conglomerados, 2)
+  AnswerTests: omnitest(correctExpr='{set.seed(1); sample(conglomerados, 2)}')
+  Hint: "set.seed(1); sample(conglomerados, 2)"
+
+- Class: cmd_question
+  Output: "Guarda esos dos conglomerados en 'cl' (cl <- set.seed(1); sample(conglomerados, 2) ya lo hiciste arriba, ahora repitelo asignando a 'cl') y despues obten TODOS los estudiantes de esos conglomerados con: estudiantes$id[estudiantes$grupo %in% cl]"
+  CorrectAnswer: set.seed(1); cl <- sample(conglomerados, 2); estudiantes$id[estudiantes$grupo %in% cl]
+  AnswerTests: omnitest(correctExpr='{set.seed(1); cl <- sample(conglomerados, 2); estudiantes$id[estudiantes$grupo %in% cl]}')
+  Hint: "set.seed(1); cl <- sample(conglomerados, 2); estudiantes$id[estudiantes$grupo %in% cl]"
+
+- Class: text
+  Output: "Interpretacion: nota que la muestra por conglomerados que obtuviste tiene 20 estudiantes (2 conglomerados completos de 10 cada uno), mientras que las muestras estratificada y aleatoria simple anteriores tenian 10. En conglomerados el tamano final depende de cuantos integrantes tenga cada grupo elegido, no se fija directamente."
+
+- Class: text
+  Output: "MUESTREO POR CONVENIENCIA: se seleccionan los elementos mas faciles o rapidos de conseguir (los primeros disponibles, los que responden voluntariamente, etc.). Es rapido y barato, pero NO es un metodo probabilistico: no todos los elementos tienen una probabilidad conocida de ser elegidos, y el resultado puede estar sesgado."
+
+- Class: cmd_question
+  Output: "Simula una muestra por conveniencia tomando simplemente los primeros 10 estudiantes de la lista con: head(estudiantes$id, 10)"
+  CorrectAnswer: head(estudiantes$id, 10)
+  AnswerTests: omnitest(correctExpr='head(estudiantes$id, 10)')
+  Hint: "head(estudiantes$id, 10)"
+
+- Class: mult_question
+  Output: "Un profesor encuesta unicamente a los 10 alumnos que se sientan en las primeras dos filas, porque son los que tiene mas a la mano. Esto es un ejemplo de:"
+  AnswerChoices: Muestreo aleatorio simple, porque son solo 10 personas;Muestreo por conveniencia, y puede no representar a todo el grupo;Muestreo estratificado por fila;Un censo, porque incluye a todos los alumnos
+  CorrectAnswer: Muestreo por conveniencia, y puede no representar a todo el grupo
+  AnswerTests: omnitest(correctVal='Muestreo por conveniencia, y puede no representar a todo el grupo')
+  Hint: "¿Se eligio a los alumnos al azar, o porque eran los mas faciles de encuestar?"
+
+- Class: text
+  Output: "Importante: que una muestra sea facil de obtener NO garantiza que sea representativa. Los primeros estudiantes de la lista, por ejemplo, podrian pertenecer todos al mismo semestre o grupo, lo cual sesgaria cualquier conclusion sobre TODA la poblacion."
+
+- Class: text
+  Output: "Actividad de aplicacion: a continuacion se te presentaran 5 situaciones distintas. Para cada una, elegiras el metodo de muestreo mas apropiado entre: aleatorio simple, sistematico, estratificado, conglomerados o conveniencia, y recibiras retroalimentacion sobre tu eleccion."
+
+- Class: mult_question
+  Output: "Situacion 1: Un banco tiene una lista completa y numerada de sus 5,000 clientes y quiere elegir 100 al azar para una encuesta de satisfaccion, sin importar sucursal ni tipo de cuenta. ¿Que metodo es mas apropiado?"
+  AnswerChoices: Aleatorio simple;Estratificado;Conglomerados;Conveniencia
+  CorrectAnswer: Aleatorio simple
+  AnswerTests: omnitest(correctVal='Aleatorio simple')
+  Hint: "Hay una lista completa y no se necesita garantizar subgrupos especificos: es el caso mas basico."
+
+- Class: mult_question
+  Output: "Situacion 2: Una fabrica revisa cada 50vo producto que sale de la linea de produccion para control de calidad. ¿Que metodo es mas apropiado?"
+  AnswerChoices: Sistematico;Estratificado;Conglomerados;Conveniencia
+  CorrectAnswer: Sistematico
+  AnswerTests: omnitest(correctVal='Sistematico')
+  Hint: "Seleccionar 'cada k-esimo elemento' es la caracteristica central de este metodo."
+
+- Class: mult_question
+  Output: "Situacion 3: Una universidad quiere asegurar que la encuesta de satisfaccion incluya proporcionalmente estudiantes de licenciatura, maestria y doctorado, porque sus opiniones suelen diferir mucho. ¿Que metodo es mas apropiado?"
+  AnswerChoices: Estratificado, usando el nivel academico como estrato;Conglomerados;Conveniencia;Sistematico
+  CorrectAnswer: Estratificado, usando el nivel academico como estrato
+  AnswerTests: omnitest(correctVal='Estratificado, usando el nivel academico como estrato')
+  Hint: "Se necesita representar bien a subgrupos que se sabe son distintos entre si: eso es un estrato."
+
+- Class: mult_question
+  Output: "Situacion 4: Una empresa con oficinas en 40 ciudades diferentes no puede visitar todas por presupuesto, asi que elige al azar 5 ciudades completas y entrevista a TODOS los empleados de esas 5 ciudades. ¿Que metodo es mas apropiado?"
+  AnswerChoices: Conglomerados, usando la ciudad como conglomerado;Estratificado;Aleatorio simple;Conveniencia
+  CorrectAnswer: Conglomerados, usando la ciudad como conglomerado
+  AnswerTests: omnitest(correctVal='Conglomerados, usando la ciudad como conglomerado')
+  Hint: "Se eligen grupos completos (ciudades) y se estudia a todos sus integrantes: esa es la idea de conglomerados."
+
+- Class: mult_question
+  Output: "Situacion 5: Un estudiante hace su tesis y, por falta de tiempo, solo encuesta a sus companeros de clase que acepten responder en el pasillo. ¿Que metodo esta usando, y que limitacion tiene?"
+  AnswerChoices: Conveniencia; puede no representar a la poblacion de interes mas amplia;Aleatorio simple; es completamente representativo;Estratificado; garantiza representar todos los subgrupos;Conglomerados; siempre es mas preciso que un censo
+  CorrectAnswer: Conveniencia; puede no representar a la poblacion de interes mas amplia
+  AnswerTests: omnitest(correctVal='Conveniencia; puede no representar a la poblacion de interes mas amplia')
+  Hint: "¿Eligio a los participantes por facilidad de acceso, o con un procedimiento probabilistico?"
+
+- Class: text
+  Output: "Resumen de la leccion 2: practicaste en R los cinco metodos de muestreo (aleatorio simple, sistematico, estratificado, conglomerados y conveniencia) sobre la misma poblacion de estudiantes, y aprendiste a elegir el metodo mas adecuado segun la situacion. En la siguiente leccion usaras estas mismas ideas para construir distribuciones muestrales de la media, la proporcion y la varianza."
