@@ -1,0 +1,96 @@
+- Class: meta
+  Course: Muestreo Unidad II
+  Lesson: 04 Aplicacion Integral
+  Author: Equipo de Estadistica UACJ
+  Type: Standard
+  Organization: Universidad Autonoma de Ciudad Juarez
+  Version: 2.4.5
+
+- Class: text
+  Output: "Leccion 4. Aplicacion Integral. Objetivo de aprendizaje: resolver, de principio a fin, un problema real de Ingenieria de Software: elegir un metodo de muestreo, justificarlo, obtener muestras en R, calcular estadisticos, y analizar la distribucion muestral resultante para tomar una decision."
+
+- Class: text
+  Output: "Contexto: el equipo de operaciones de una plataforma quiere saber si el desempeno de sus 10 servidores es aceptable. Se tiene 'poblacion_servidores', con 500 solicitudes registradas (50 por servidor), las columnas servidor, tiempo_ms (tiempo de respuesta en milisegundos) y error (1 si la solicitud fallo). Estos objetos los creo initLesson.R con set.seed(2024)."
+
+- Class: text
+  Output: "Paso 1: identificar la poblacion. En este caso, la poblacion son las 500 solicitudes registradas entre los 10 servidores (no solo las de un servidor en particular, ya que el equipo quiere una conclusion sobre TODA la plataforma)."
+
+- Class: cmd_question
+  Output: "Confirma el tamano de la poblacion con: N_servidores"
+  CorrectAnswer: N_servidores
+  AnswerTests: omnitest(correctExpr='N_servidores')
+  Hint: "N_servidores"
+
+- Class: text
+  Output: "Paso 2: determinar que informacion se desea obtener. En este problema interesan dos cosas: el tiempo de respuesta PROMEDIO de la plataforma, y la TASA DE ERROR (proporcion de solicitudes que fallan)."
+
+- Class: mult_question
+  Output: "Paso 3: el equipo quiere asegurarse de que la muestra incluya solicitudes de LOS 10 servidores (para detectar si alguno en particular esta fallando mas que otros), y ya cuenta con el registro completo de las 500 solicitudes. ¿Que metodo de muestreo es mas apropiado?"
+  AnswerChoices: Muestreo por conveniencia, tomando solo las solicitudes mas recientes;Muestreo estratificado, usando cada servidor como estrato;Muestreo aleatorio simple sobre toda la poblacion, sin considerar el servidor;Un censo, ya que nunca se debe muestrear en produccion
+  CorrectAnswer: Muestreo estratificado, usando cada servidor como estrato
+  AnswerTests: omnitest(correctVal='Muestreo estratificado, usando cada servidor como estrato')
+  Hint: "El equipo quiere garantizar representacion de CADA servidor: esa es exactamente la ventaja del muestreo estratificado."
+
+- Class: text
+  Output: "Paso 4: justificacion. Se elige muestreo ESTRATIFICADO por servidor porque: (1) se conoce el marco muestral completo, (2) los servidores son subgrupos claramente definidos y de interes propio, y (3) queremos evitar que, por azar, una muestra aleatoria simple deje fuera por completo a algun servidor con problemas de desempeno."
+
+- Class: cmd_question
+  Output: "Paso 5: obten la muestra. Fija set.seed(5) y selecciona 5 solicitudes de CADA servidor con: muestra_ids <- unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5)))"
+  CorrectAnswer: set.seed(5); muestra_ids <- unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5)))
+  AnswerTests: omnitest(correctExpr='{set.seed(5); unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5)))}')
+  Hint: "set.seed(5); muestra_ids <- unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5)))"
+
+- Class: cmd_question
+  Output: "Extrae los datos completos de esa muestra con: muestra_datos <- poblacion_servidores[poblacion_servidores$id %in% muestra_ids, ]"
+  CorrectAnswer: muestra_datos <- poblacion_servidores[poblacion_servidores$id %in% muestra_ids, ]
+  AnswerTests: omnitest(correctExpr='poblacion_servidores[poblacion_servidores$id %in% muestra_ids, ]')
+  Hint: "muestra_datos <- poblacion_servidores[poblacion_servidores$id %in% muestra_ids, ]"
+
+- Class: cmd_question
+  Output: "Paso 6: calcula al menos un estadistico. Obten el tiempo de respuesta promedio de tu muestra con: mean(muestra_datos$tiempo_ms)"
+  CorrectAnswer: mean(muestra_datos$tiempo_ms)
+  AnswerTests: omnitest(correctExpr='mean(muestra_datos$tiempo_ms)')
+  Hint: "mean(muestra_datos$tiempo_ms)"
+
+- Class: cmd_question
+  Output: "Tambien calcula la tasa de error de tu muestra con: mean(muestra_datos$error)"
+  CorrectAnswer: mean(muestra_datos$error)
+  AnswerTests: omnitest(correctExpr='mean(muestra_datos$error)')
+  Hint: "mean(muestra_datos$error)"
+
+- Class: text
+  Output: "Paso 7: repetir el proceso con diferentes muestras. Una sola muestra puede no ser suficiente para confiar en el resultado; por eso repetiremos el muestreo estratificado muchas veces y guardaremos la media obtenida en cada repeticion, para construir su distribucion muestral."
+
+- Class: cmd_question
+  Output: "Fija set.seed(7) y genera 300 medias muestrales repitiendo el muestreo estratificado con: medias_repetidas <- replicate(300, { ids <- unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5))); mean(poblacion_servidores$tiempo_ms[poblacion_servidores$id %in% ids]) })"
+  CorrectAnswer: set.seed(7); medias_repetidas <- replicate(300, { ids <- unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5))); mean(poblacion_servidores$tiempo_ms[poblacion_servidores$id %in% ids]) })
+  AnswerTests: omnitest(correctExpr='{set.seed(7); replicate(300, { ids <- unlist(tapply(poblacion_servidores$id, poblacion_servidores$servidor, function(x) sample(x, 5))); mean(poblacion_servidores$tiempo_ms[poblacion_servidores$id %in% ids]) })}')
+  Hint: "Copia exactamente la instruccion sugerida; es larga pero es una sola linea de codigo."
+
+- Class: text
+  Output: "Paso 8: analizar la distribucion muestral obtenida. Ahora 'medias_repetidas' contiene 300 medias, una por cada repeticion del muestreo. Podemos resumir esa distribucion con su media y su desviacion estandar (el error estandar)."
+
+- Class: cmd_question
+  Output: "Calcula la media de 'medias_repetidas' con mean(medias_repetidas), y compara mentalmente ese valor contra media_tiempo_real."
+  CorrectAnswer: mean(medias_repetidas)
+  AnswerTests: omnitest(correctExpr='mean(medias_repetidas)')
+  Hint: "mean(medias_repetidas)"
+
+- Class: cmd_question
+  Output: "Calcula tambien sd(medias_repetidas), el error estandar de esta distribucion muestral."
+  CorrectAnswer: sd(medias_repetidas)
+  AnswerTests: omnitest(correctExpr='sd(medias_repetidas)')
+  Hint: "sd(medias_repetidas)"
+
+- Class: text
+  Output: "Paso 9: interpretar los resultados. La media de 'medias_repetidas' deberia estar muy cerca de 'media_tiempo_real' (el verdadero promedio de la plataforma), y el error estandar deberia ser un numero relativamente pequeno comparado con el promedio, lo que indica que el muestreo estratificado por servidor produce estimaciones consistentes de una repeticion a otra."
+
+- Class: mult_question
+  Output: "Si el error estandar de 'medias_repetidas' hubiera resultado muy GRANDE (por ejemplo, del mismo orden que la propia media), ¿que decision seria mas prudente tomar antes de reportar el promedio a la gerencia?"
+  AnswerChoices: Reportar el promedio de cualquier forma, sin mencionar la variabilidad;Aumentar el tamano de muestra por estrato o revisar si algun servidor es muy distinto a los demas, antes de confiar en la estimacion;Cambiar a muestreo por conveniencia para simplificar el analisis;Ignorar el problema, ya que el error estandar no afecta la calidad de la conclusion
+  CorrectAnswer: Aumentar el tamano de muestra por estrato o revisar si algun servidor es muy distinto a los demas, antes de confiar en la estimacion
+  AnswerTests: omnitest(correctVal='Aumentar el tamano de muestra por estrato o revisar si algun servidor es muy distinto a los demas, antes de confiar en la estimacion')
+  Hint: "Un error estandar grande significa poca confianza en la estimacion puntual; ¿que se puede hacer para reducirlo?"
+
+- Class: text
+  Output: "Resumen y cierre del curso: a lo largo de estas cuatro lecciones aprendiste los fundamentos del muestreo (poblacion, muestra, marco muestral), aplicaste en R los cinco metodos de muestreo, construiste e interpretaste distribuciones muestrales de la media, la proporcion y la varianza, y resolviste un problema integrador de principio a fin en un contexto de Ingenieria de Software. Estas herramientas son la base para tomar decisiones informadas a partir de datos, sin necesidad de medir a toda una poblacion."
