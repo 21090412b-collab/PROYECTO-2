@@ -1,0 +1,117 @@
+- Class: meta
+  Course: Muestreo Unidad II
+  Lesson: 03 Distribuciones Muestrales
+  Author: Equipo de Estadistica UACJ
+  Type: Standard
+  Organization: Universidad Autonoma de Ciudad Juarez
+  Version: 2.4.5
+
+- Class: text
+  Output: "Leccion 3. Distribuciones Muestrales. Objetivo de aprendizaje: al terminar esta leccion podras explicar que es una distribucion muestral, y construir e interpretar en R las distribuciones muestrales de la media, la proporcion y la varianza."
+
+- Class: text
+  Output: "Ya tienes disponible 'usuarios' (200 registros de una app, con tiempo_respuesta y conversion), ademas de N_usuarios, media_poblacional, proporcion_poblacional, varianza_poblacional y la funcion generar_medias_muestrales(n, reps), creados por initLesson.R con set.seed(100)."
+
+- Class: text
+  Output: "Es facil confundir tres ideas distintas: la DISTRIBUCION DE LOS DATOS (como se reparten los 200 valores de tiempo_respuesta), la DISTRIBUCION DE UNA MUESTRA (los valores de una sola muestra que tomamos), y la DISTRIBUCION MUESTRAL (como varia un ESTADISTICO, por ejemplo la media, si repitieramos el muestreo muchas veces)."
+
+- Class: mult_question
+  Output: "Si tomamos 500 muestras distintas de tamano 30 de 'usuarios', calculamos la media de cada una, y graficamos esas 500 medias, ¿que estamos observando?"
+  AnswerChoices: La distribucion de los datos originales;La distribucion de una sola muestra;La distribucion muestral de la media;La poblacion completa
+  CorrectAnswer: La distribucion muestral de la media
+  AnswerTests: omnitest(correctVal='La distribucion muestral de la media')
+  Hint: "Estamos repitiendo el muestreo muchas veces y guardando un estadistico (la media) de cada repeticion."
+
+- Class: cmd_question
+  Output: "Como referencia, observa la media real de tiempo_respuesta en TODA la poblacion escribiendo: media_poblacional"
+  CorrectAnswer: media_poblacional
+  AnswerTests: omnitest(correctExpr='media_poblacional')
+  Hint: "media_poblacional"
+
+- Class: text
+  Output: "DISTRIBUCION MUESTRAL DE LA MEDIA: si tomamos muchas muestras del mismo tamano n y calculamos la media de cada una, esas medias forman una distribucion. Entre mas grande sea n, menos varian esas medias entre si (se concentran mas alrededor de la media poblacional)."
+
+- Class: cmd_question
+  Output: "Genera 500 medias muestrales usando muestras de tamano 30 con: set.seed(1); medias_30 <- generar_medias_muestrales(30, 500)"
+  CorrectAnswer: set.seed(1); medias_30 <- generar_medias_muestrales(30, 500)
+  AnswerTests: omnitest(correctExpr='{set.seed(1); generar_medias_muestrales(30, 500)}')
+  Hint: "set.seed(1); medias_30 <- generar_medias_muestrales(30, 500)"
+
+- Class: cmd_question
+  Output: "Calcula la desviacion estandar de esas 500 medias muestrales con sd(medias_30). A esto se le llama el ERROR ESTANDAR de la media."
+  CorrectAnswer: sd(medias_30)
+  AnswerTests: omnitest(correctExpr='sd(medias_30)')
+  Hint: "sd(medias_30)"
+
+- Class: cmd_question
+  Output: "Ahora repite el experimento con muestras mas pequenas: set.seed(1); medias_5 <- generar_medias_muestrales(5, 500), y calcula sd(medias_5)."
+  CorrectAnswer: set.seed(1); medias_5 <- generar_medias_muestrales(5, 500); sd(medias_5)
+  AnswerTests: omnitest(correctExpr='{set.seed(1); sd(generar_medias_muestrales(5, 500))}')
+  Hint: "set.seed(1); medias_5 <- generar_medias_muestrales(5, 500); sd(medias_5)"
+
+- Class: mult_question
+  Output: "Comparando sd(medias_5) contra sd(medias_30), ¿que relacion observas entre el tamano de muestra n y la variabilidad de las medias muestrales?"
+  AnswerChoices: A mayor n, mayor variabilidad de las medias muestrales;A mayor n, menor variabilidad de las medias muestrales (las medias se concentran mas);El tamano de muestra no afecta la variabilidad de las medias;Solo el tamano de la poblacion afecta la variabilidad
+  CorrectAnswer: A mayor n, menor variabilidad de las medias muestrales (las medias se concentran mas)
+  AnswerTests: omnitest(correctVal='A mayor n, menor variabilidad de las medias muestrales (las medias se concentran mas)')
+  Hint: "Compara los dos valores de sd que acabas de calcular: ¿cual fue mayor, el de n=5 o el de n=30?"
+
+- Class: text
+  Output: "Esta relacion (a mayor tamano de muestra, menor error estandar) es una de las ideas mas importantes del muestreo: muestras mas grandes dan estimaciones mas estables y confiables de la media poblacional, aunque requieren mas recursos para obtenerse."
+
+- Class: text
+  Output: "DISTRIBUCION MUESTRAL DE LA PROPORCION: se usa cuando la variable de interes es BINARIA o categorica (por ejemplo, 'conversion': 1 si el usuario compro, 0 si no). En vez de una media, calculamos la PROPORCION de exitos en cada muestra."
+
+- Class: cmd_question
+  Output: "Genera 500 proporciones muestrales de tamano 30 con: set.seed(2); props_30 <- replicate(500, mean(sample(usuarios$conversion, 30, replace = TRUE)))"
+  CorrectAnswer: set.seed(2); props_30 <- replicate(500, mean(sample(usuarios$conversion, 30, replace = TRUE)))
+  AnswerTests: omnitest(correctExpr='{set.seed(2); replicate(500, mean(sample(usuarios$conversion, 30, replace = TRUE)))}')
+  Hint: "set.seed(2); props_30 <- replicate(500, mean(sample(usuarios$conversion, 30, replace = TRUE)))"
+
+- Class: cmd_question
+  Output: "Calcula la media y la desviacion estandar de esas 500 proporciones con mean(props_30) y sd(props_30)."
+  CorrectAnswer: mean(props_30); sd(props_30)
+  AnswerTests: omnitest(correctExpr='mean(props_30)')
+  Hint: "mean(props_30) y luego sd(props_30)."
+
+- Class: mult_question
+  Output: "Al comparar mean(props_30) con proporcion_poblacional, se observa que ambos valores son parecidos. ¿Que interpretacion es correcta?"
+  AnswerChoices: La media de las proporciones muestrales tiende a acercarse a la proporcion real de la poblacion;Esto es una coincidencia sin ningun significado estadistico;La proporcion muestral nunca puede aproximarse a la poblacional;Significa que la muestra es un censo
+  CorrectAnswer: La media de las proporciones muestrales tiende a acercarse a la proporcion real de la poblacion
+  AnswerTests: omnitest(correctVal='La media de las proporciones muestrales tiende a acercarse a la proporcion real de la poblacion')
+  Hint: "Piensa en por que promediar muchas proporciones muestrales deberia 'apuntar' hacia el valor real de la poblacion."
+
+- Class: text
+  Output: "DISTRIBUCION MUESTRAL DE LA VARIANZA: de manera similar, si calculamos la VARIANZA de muchas muestras distintas, esas varianzas tambien forman una distribucion, generalmente asimetrica (sesgada a la derecha), a diferencia de la distribucion de la media que tiende a ser mas simetrica."
+
+- Class: cmd_question
+  Output: "Genera 500 varianzas muestrales de tamano 30 con: set.seed(3); vars_30 <- replicate(500, var(sample(usuarios$tiempo_respuesta, 30, replace = TRUE)))"
+  CorrectAnswer: set.seed(3); vars_30 <- replicate(500, var(sample(usuarios$tiempo_respuesta, 30, replace = TRUE)))
+  AnswerTests: omnitest(correctExpr='{set.seed(3); replicate(500, var(sample(usuarios$tiempo_respuesta, 30, replace = TRUE)))}')
+  Hint: "set.seed(3); vars_30 <- replicate(500, var(sample(usuarios$tiempo_respuesta, 30, replace = TRUE)))"
+
+- Class: cmd_question
+  Output: "Compara la media de esas varianzas muestrales contra la varianza real de la poblacion con: mean(vars_30) - varianza_poblacional"
+  CorrectAnswer: mean(vars_30) - varianza_poblacional
+  AnswerTests: omnitest(correctExpr='mean(vars_30) - varianza_poblacional')
+  Hint: "mean(vars_30) - varianza_poblacional"
+
+- Class: mult_question
+  Output: "El resultado anterior deberia ser un numero cercano a cero. ¿Que significa esto?"
+  AnswerChoices: Que la varianza muestral, en promedio, se aproxima bastante a la varianza poblacional;Que la varianza poblacional es igual a cero;Que hubo un error en el codigo, ya que siempre deberian ser identicas;Que la varianza no puede estimarse con muestras
+  CorrectAnswer: Que la varianza muestral, en promedio, se aproxima bastante a la varianza poblacional
+  AnswerTests: omnitest(correctVal='Que la varianza muestral, en promedio, se aproxima bastante a la varianza poblacional')
+  Hint: "Un valor cercano a cero en una resta indica que ambos numeros eran parecidos."
+
+- Class: text
+  Output: "Actividad de aplicacion: en el contexto de Ingenieria de Software, imagina que el equipo de UX quiere saber si el tiempo de respuesta promedio de la app cambio despues de una actualizacion. Para eso podrian tomar varias muestras de tiempos de respuesta antes y despues, y comparar sus distribuciones muestrales de la media."
+
+- Class: mult_question
+  Output: "Si despues de una actualizacion las medias muestrales del nuevo tiempo de respuesta son consistentemente MAS BAJAS que antes, y ademas tienen un error estandar pequeno (poca variabilidad), ¿que se puede concluir con mas confianza?"
+  AnswerChoices: Que la mejora observada probablemente es real y no solo producto del azar de una sola muestra;Que no se puede concluir nada sin importar los datos;Que el error estandar no es relevante para esta decision;Que basta con una sola muestra pequena para decidir, sin repetir el proceso
+  CorrectAnswer: Que la mejora observada probablemente es real y no solo producto del azar de una sola muestra
+  AnswerTests: omnitest(correctVal='Que la mejora observada probablemente es real y no solo producto del azar de una sola muestra')
+  Hint: "Un error estandar pequeno significa que las medias muestrales son consistentes entre si, lo cual da mas confianza en la conclusion."
+
+- Class: text
+  Output: "Resumen de la leccion 3: aprendiste a diferenciar la distribucion de los datos, de una muestra y de un estadistico; y construiste en R las distribuciones muestrales de la media, la proporcion y la varianza, observando como el tamano de muestra afecta su variabilidad. En la ultima leccion aplicaras todo lo visto en un problema integrador de software."
